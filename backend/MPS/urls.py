@@ -22,8 +22,8 @@ from django.conf import settings
 urlpatterns = [
      path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
-    path('mainapp', include('mainapp.urls')),
-    path('api/', include('rpiImage.urls')),
+    path('mainapp/', include('mainapp.urls')),
+    
 ]
 
 
