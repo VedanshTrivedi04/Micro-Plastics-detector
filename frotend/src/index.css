@@ -1,0 +1,81 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary: #2a9d8f;
+    --secondary: #e76f51;
+    --accent: #f4a261;
+    --light: #f8f9fa;
+    --dark: #264653;
+    --purple: #6a4c93;
+}
+
+body {
+    background: linear-gradient(135deg, var(--dark) 0%, #2c5530 100%);
+    color: var(--light);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes grow {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--h);
+    }
+}
+
+@keyframes fill {
+    from {
+        width: 0;
+    }
+    to {
+        width: 75%;
+    }
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(231, 111, 81, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 111, 81, 0);
+    }
+}

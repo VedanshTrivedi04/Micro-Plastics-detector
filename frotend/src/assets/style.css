@@ -1,0 +1,365 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(-45deg, #0c0c0c, #1a1a1a, #2d2d2d, #3a3a3a);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease-out;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo i {
+    font-size: 32px;
+    color: #8a2be2;
+    animation: pulse 2s infinite;
+}
+
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(to right, #8a2be2, #9370db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
+
+nav a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s, background 0.3s;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+nav a:hover {
+    color: #8a2be2;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 16px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 1s ease-out;
+}
+
+.hero h2 {
+    font-size: 42px;
+    margin-bottom: 20px;
+    color: #fff;
+    animation: textGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    from {
+        text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(138, 43, 226, 0.6), 0 0 25px rgba(138, 43, 226, 0.4);
+    }
+}
+
+.hero p {
+    font-size: 18px;
+    max-width: 700px;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-get-started {
+    background: linear-gradient(to right, #8a2be2, #9370db);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.btn-get-started:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(138, 43, 226, 0.5);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(138, 43, 226, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); }
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.sensor-data, .analysis {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 1s ease-out;
+}
+
+.sensor-data h3, .analysis h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #8a2be2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.data-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.data-card {
+    background: rgba(30, 30, 30, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Transition styles are handled by inline styles in the component now */
+}
+
+.data-card:hover {
+    transform: translateY(-5px);
+    background: rgba(40, 40, 40, 0.95);
+}
+
+.data-card i {
+    font-size: 28px;
+    color: #8a2be2;
+    margin-bottom: 10px;
+}
+
+.data-card h4 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.data-card p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.analysis-graph {
+    background: linear-gradient(45deg, rgba(138, 43, 226, 0.1), rgba(147, 112, 219, 0.1));
+    height: 200px;
+    border-radius: 12px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.graph-bar {
+    position: absolute;
+    bottom: 0;
+    width: 30px;
+    border-radius: 4px 4px 0 0;
+    animation: grow 1.5s ease-out;
+}
+
+.bar-1 { background: linear-gradient(to top, #8a2be2, #9370db); }
+.bar-2 { background: linear-gradient(to top, #6a0dad, #7b68ee); }
+.bar-3 { background: linear-gradient(to top, #4b0082, #6a5acd); }
+.bar-4 { background: linear-gradient(to top, #483d8b, #8470ff); }
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.feature-card {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 12px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Transition styles are handled by inline styles in the component now */
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 0, 0, 0.75);
+}
+
+.feature-card i {
+    font-size: 32px;
+    color: #8a2be2;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.feature-card p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.status {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 1s ease-out 0.2s both;
+}
+
+.status h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #8a2be2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    height: 20px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 75%;
+    background: linear-gradient(to right, #8a2be2, #9370db);
+    border-radius: 50px;
+    animation: fill 2s ease-out;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%, transparent 25%,
+        transparent 50%, rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%, transparent 75%,
+        transparent
+    );
+    z-index: 1;
+    background-size: 50px 50px;
+    animation: move 2s linear infinite;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 1s ease-out 0.4s both;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* MODIFIED for React */
+@keyframes grow {
+    from { height: 0; }
+    to { height: 100%; }
+}
+
+@keyframes fill {
+    from { width: 0; }
+    to { width: 75%; }
+}
+
+@keyframes move {
+    from { background-position: 0 0; }
+    to { background-position: 50px 50px; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content, .data-cards {
+        grid-template-columns: 1fr;
+    }
+    .hero h2 { font-size: 32px; }
+    .hero p { font-size: 16px; }
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
