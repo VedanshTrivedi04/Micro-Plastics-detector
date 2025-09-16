@@ -46,26 +46,55 @@ const Login = () => {
   const [username, setusername] = useState('');
   const [password, setpassword] = useState('');
   const [formStatus, setFormStatus] = useState('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormStatus('success');
-    setTimeout(() => {
-      setFormStatus('idle');
-    }, 2000);
+    setFormStatus('loading');
+    setErrorMessage('');
 
-    const userData = { username, password };
-    console.log('userdata==>', userData);
+    const BASE_URL = 'http://127.0.0.1:8000';
+    const TOKEN_URL = `${BASE_URL}/api/v1/token/`;
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/token/', userData);
-      console.log(response.data);
-      localStorage.setItem('accesstoken', response.data.access);
-      localStorage.setItem('refreshtoken', response.data.refresh);
+      // Try with username first (Django default), then fallback to email
+      const tryPayloads = [
+        { username, password },
+        { email: username, password },
+      ];
+
+      let tokens = null;
+      let lastErr;
+      for (const payload of tryPayloads) {
+        try {
+          const res = await axios.post(TOKEN_URL, payload, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          tokens = res.data;
+          break;
+        } catch (err) {
+          lastErr = err;
+          // continue to next payload on 401/400
+          if (!err.response || (err.response.status !== 400 && err.response.status !== 401)) {
+            throw err; // unknown error -> break out
+          }
+        }
+      }
+
+      if (!tokens) {
+        throw lastErr || new Error('Authentication failed');
+      }
+
+      localStorage.setItem('accesstoken', tokens.access);
+      localStorage.setItem('refreshtoken', tokens.refresh);
+      setFormStatus('success');
       navigate('/home');
     } catch (error) {
-      console.error('invalid credential', error);
+      console.error('Login error', error);
+      const msg = error?.response?.data?.detail || 'Invalid credentials';
+      setErrorMessage(msg);
+      setFormStatus('idle');
     }
   };
 
@@ -107,14 +136,19 @@ const Login = () => {
             style={{
               background: formStatus === 'success' ? 'rgba(40, 167, 69, 0.3)' : ''
             }}
-            disabled={formStatus === 'success'}
+            disabled={formStatus === 'success' || formStatus === 'loading'}
           >
-            {formStatus === 'success' ? (
+            {formStatus === 'loading' ? (
+              <><i className="fas fa-spinner fa-spin"></i> Signing in...</>
+            ) : formStatus === 'success' ? (
               <><i className="fas fa-check"></i> SUCCESS!</>
             ) : (
               'LOGIN'
             )}
           </button>
+          {errorMessage && (
+            <div style={{ marginTop: 10, color: '#ff6b6b', fontWeight: 600 }}>{errorMessage}</div>
+          )}
           <div className="social-icons">
             <a href="#"><FaGoogle /></a>
           </div>
