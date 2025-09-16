@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaGoogle } from "react-icons/fa";
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import'./login.css';
 
 const Particles = () => {
   const [particles, setParticles] = useState([]);
@@ -125,6 +126,7 @@ const Login = () => {
           </div>
         </form>
       </div>
+      
     </>
   );
 };

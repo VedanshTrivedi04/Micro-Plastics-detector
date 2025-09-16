@@ -1,62 +1,89 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+// Make sure to import the new CSS for this component
+import'./home.css';
+
+// A small component to generate the animated particles for the research section
+const ResearchParticles = () => {
+    const [particles, setParticles] = useState([]);
+
+    useEffect(() => {
+        const newParticles = Array.from({ length: 12 }).map((_, i) => ({
+            id: i,
+            style: {
+                width: `${Math.random() * 6 + 4}px`,
+                height: `${Math.random() * 6 + 4}px`,
+                left: `${Math.random() * 160}px`,
+                top: `${Math.random() * 80 + 20}px`,
+                animationDelay: `${Math.random() * 4}s`,
+                animationDuration: `${Math.random() * 2 + 3}s`,
+            },
+        }));
+        setParticles(newParticles);
+    }, []);
+
+    return (
+        <div className="particles-animation">
+            {particles.map(p => <div key={p.id} className="particle" style={p.style} />)}
+        </div>
+    );
+};
+
 
 const Home = () => {
-    // State to manage the overall workflow of the app
-    // The 'streaming' state is no longer needed
-    const [appState, setAppState] = useState('idle'); // idle | captured | analyzing | results
-    const [capturedImage, setCapturedImage] = useState(null);
+    // State machine for the application flow
+    const [appState, setAppState] = useState('idle'); // idle | countdown | analyzing | results
+    const [countdown, setCountdown] = useState(20);
     const [analysisResult, setAnalysisResult] = useState(null);
-    const [downloadStatus, setDownloadStatus] = useState('idle');
+    const [downloadStatus, setDownloadStatus] = useState('idle'); // idle | downloading | downloaded
 
-    // Ref for the hidden file input element
-    const fileInputRef = useRef(null);
+    // Effect to handle the countdown timer
+    useEffect(() => {
+        if (appState !== 'countdown') return;
 
-    // This function handles the file selection
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setCapturedImage(reader.result);
-                setAppState('captured');
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+        const timer = setInterval(() => {
+            setCountdown(prev => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    setAppState('analyzing'); // Trigger analysis after countdown
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
 
-    // This function is triggered when the "Upload Image" button is clicked
-    const handleUploadClick = () => {
-        fileInputRef.current.click();
-    };
-    
-    // Resets the state to allow for a new upload
-    const handleRetake = () => {
-        setCapturedImage(null);
-        setAnalysisResult(null);
-        setAppState('idle');
-        // Reset the file input value so the user can upload the same file again
-        if(fileInputRef.current) {
-            fileInputRef.current.value = null;
-        }
-    };
+        return () => clearInterval(timer); // Cleanup interval
+    }, [appState]);
 
-    const simulateAnalysis = () => {
-        setAppState('analyzing');
-        setTimeout(() => {
-            // Generate random results
+    // Effect to handle the analysis simulation
+    useEffect(() => {
+        if (appState !== 'analyzing') return;
+
+        const analysisTimer = setTimeout(() => {
+            // Generate random results for the report
             const particleCount = Math.floor(Math.random() * 300) + 50;
             const avgSize = (Math.random() * 10 + 1).toFixed(1);
-            const contaminationLevels = ['Low', 'Moderate', 'High', 'Severe'];
-            const polymers = ['Polyethylene', 'Polypropylene', 'Polystyrene', 'PVC', 'PET'];
-            
+            const contaminationLevels = ['Low', 'Moderate', 'High'];
+            const polymers = ['Polyethylene', 'Polypropylene', 'Polystyrene', 'PVC'];
+            const riskLevels = ['Low', 'Medium', 'High'];
+            const riskLevel = riskLevels[Math.floor(Math.random() * riskLevels.length)];
+
             setAnalysisResult({
                 particleCount: `${particleCount} particles/L`,
                 avgSize: `${avgSize} μm`,
                 contaminationLevel: contaminationLevels[Math.floor(Math.random() * contaminationLevels.length)],
                 polymerType: polymers[Math.floor(Math.random() * polymers.length)],
+                riskLevel: riskLevel,
             });
             setAppState('results');
-        }, 2000);
+        }, 3000); // Simulate 3 seconds of analysis
+
+        return () => clearTimeout(analysisTimer);
+    }, [appState]);
+
+    const handleStartResearch = () => {
+        setAppState('countdown');
+        setCountdown(20);
+        setAnalysisResult(null);
     };
 
     const handleDownload = () => {
@@ -64,7 +91,7 @@ const Home = () => {
         setTimeout(() => {
             setDownloadStatus('downloaded');
             setTimeout(() => setDownloadStatus('idle'), 2000);
-        }, 1000);
+        }, 1500);
     };
 
     return (
@@ -78,126 +105,116 @@ const Home = () => {
                     <ul>
                         <li><a href="#">Home</a></li>
                         <li><a href="#">Dashboard</a></li>
-                        <li><a href="#">History</a></li>
-                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Analysis</a></li>
+                        <li><a href="#">Reports</a></li>
                     </ul>
                 </nav>
             </header>
             
-            <section className="hero">
-                <h2>Detect Microplastics in Water Samples</h2>
-                <p>Upload your captured water sample images for analysis and get detailed reports on microplastic contamination levels.</p>
-            </section>
+            <div className="page-title">
+                <h2>Microplastic Analysis Report</h2>
+                <p>Start the research process to generate detailed analysis reports with contamination levels</p>
+            </div>
 
-            <div className="upload-section">
-                <div className="upload-box">
-                    <h3><i className="fas fa-upload"></i> Upload Sample Image</h3>
+            <div className="analysis-section">
+                <div className="camera-box">
+                    <h3><i className="fas fa-camera"></i> Capture Sample</h3>
                     <div className="camera-area">
-                        {/* Hidden file input */}
-                        <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            style={{ display: 'none' }} 
-                        />
-
                         {appState === 'idle' && (
                             <>
-                                <i className="fas fa-cloud-upload-alt" style={{fontSize: '48px', color: '#8a2be2', marginBottom: '15px'}}></i>
-                                <p>Click the button below to upload a sample image</p>
-                                <button className="btn-capture" onClick={handleUploadClick}>
-                                    Choose File
-                                </button>
+                                <i className="fas fa-flask"></i>
+                                <p>Click the button below to start the research process</p>
+                                <button className="btn-start-research" onClick={handleStartResearch}>Start Research</button>
                             </>
                         )}
-                        
-                        {appState === 'captured' && capturedImage && (
-                            <div className="image-preview" style={{ width: '100%' }}>
-                                <img src={capturedImage} alt="Uploaded Sample" style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px', display: 'block' }} />
-                                <div className="camera-controls" style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <button className="btn-retake" onClick={handleRetake}>Choose New Image</button>
-                                    <button className="btn-analyze" onClick={simulateAnalysis}>Analyze</button>
+                        {appState === 'countdown' && (
+                            <div className="countdown">
+                                Research in progress... {countdown} seconds remaining
+                            </div>
+                        )}
+                        {(appState === 'analyzing' || appState === 'results') && (
+                             <div className="image-preview">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23333'/%3E%3Ccircle cx='200' cy='150' r='80' fill='%238a2be2'/%3E%3Ccircle cx='200' cy='150' r='50' fill='%239370db'/%3E%3Ccircle cx='200' cy='150' r='20' fill='%23fff'/%3E%3Ctext x='200' y='280' font-family='Arial' font-size='14' fill='white' text-anchor='middle'%3EMicroplastic Sample%3C/text%3E%3C/svg%3E" alt="Captured Sample" />
+                                <div className="countdown">
+                                    {appState === 'analyzing' ? 'Sample captured! Generating report...' : 'Analysis complete!'}
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
                 
-                <div className="result-box">
-                    <h3><i className="fas fa-chart-line"></i> Analysis Results</h3>
-                    {appState === 'idle' && <p>Results will appear here after image analysis</p>}
-                    {appState === 'analyzing' && <p>Analyzing, please wait...</p>}
+                <div className="report-box">
+                    <h3><i className="fas fa-file-alt"></i> Analysis Report</h3>
+                    <p>Detailed analysis of your water sample</p>
                     
-                    {(appState === 'results' && analysisResult) && (
-                        <>
-                            <div className="result-content">
-                                <div className="result-item">
-                                    <span className="result-label">Microplastic Count:</span>
-                                    <span className="result-value">{analysisResult.particleCount}</span>
-                                </div>
-                                <div className="result-item">
-                                    <span className="result-label">Average Size:</span>
-                                    <span className="result-value">{analysisResult.avgSize}</span>
-                                </div>
-                                <div className="result-item">
-                                    <span className="result-label">Contamination Level:</span>
-                                    <span className="result-value">{analysisResult.contaminationLevel}</span>
-                                </div>
-                                <div className="result-item">
-                                    <span className="result-label">Dominant Polymer:</span>
-                                    <span className="result-value">{analysisResult.polymerType}</span>
-                                </div>
+                    <div className="report-content">
+                        <div className="report-header">
+                            <div className="report-id">Report ID: <span>MPA-2025-1082</span></div>
+                            <div className="report-date">September 16, 2025</div>
+                        </div>
+                        
+                        <div className="result-item">
+                            <span className="result-label">Microplastic Count:</span>
+                            <span className="result-value">{appState === 'analyzing' ? 'Analyzing...' : analysisResult?.particleCount || '-'}</span>
+                        </div>
+                        <div className="result-item">
+                            <span className="result-label">Average Size:</span>
+                            <span className="result-value">{appState === 'analyzing' ? 'Analyzing...' : analysisResult?.avgSize || '-'}</span>
+                        </div>
+                        <div className="result-item">
+                            <span className="result-label">Contamination Level:</span>
+                            <span className="result-value">{appState === 'analyzing' ? 'Analyzing...' : analysisResult?.contaminationLevel || '-'}</span>
+                        </div>
+                        <div className="result-item">
+                            <span className="result-label">Dominant Polymer:</span>
+                            <span className="result-value">{appState === 'analyzing' ? 'Analyzing...' : analysisResult?.polymerType || '-'}</span>
+                        </div>
+                        <div className="result-item">
+                            <span className="result-label">Risk Assessment:</span>
+                            <span className="result-value">
+                                {appState === 'analyzing' ? 'Analyzing...' : analysisResult?.riskLevel || '-'}
+                                {analysisResult?.riskLevel && (
+                                    <span className={`risk-indicator risk-${analysisResult.riskLevel.toLowerCase()}`}>{analysisResult.riskLevel}</span>
+                                )}
+                            </span>
+                        </div>
+                        
+                        <div className="chart-container">
+                            <div className="chart-bar bar-1"></div>
+                            <div className="chart-bar bar-2"></div>
+                            <div className="chart-bar bar-3"></div>
+                            <div className="chart-bar bar-4"></div>
+                            <div className="chart-labels">
+                                <span>PP</span><span>PE</span><span>PS</span><span>PVC</span>
                             </div>
+                        </div>
+                    </div>
+                    
+                    {appState === 'results' && (
+                        <div className="action-buttons">
                             <button 
-                                className="btn-download" 
+                                className="btn-download"
                                 onClick={handleDownload}
                                 disabled={downloadStatus !== 'idle'}
-                                style={{
-                                    background: downloadStatus === 'downloaded' ? 'linear-gradient(to right, #28a745, #20c997)' : ''
-                                }}
+                                style={{ background: downloadStatus === 'downloaded' ? 'linear-gradient(to right, #28a745, #20c997)' : '' }}
                             >
-                                {downloadStatus === 'idle' && <><i className="fas fa-download"></i> Download PDF Report</>}
-                                {downloadStatus === 'downloading' && <><i className="fas fa-spinner fa-spin"></i> Processing...</>}
-                                {downloadStatus === 'downloaded' && <><i className="fas fa-check"></i> Report Downloaded!</>}
+                                {downloadStatus === 'idle' && <><i className="fas fa-download"></i> Download Report</>}
+                                {downloadStatus === 'downloading' && <><i className="fas fa-spinner fa-spin"></i> Generating...</>}
+                                {downloadStatus === 'downloaded' && <><i className="fas fa-check"></i> Complete!</>}
                             </button>
-                        </>
+                            <button className="btn-share"><i className="fas fa-share-alt"></i> Share Results</button>
+                        </div>
                     )}
                 </div>
             </div>
 
-            <div className="recent-scans">
-                <h3><i className="fas fa-history"></i> Recent Scans</h3>
-                <div className="scans-grid">
-                     <div className="scan-item">
-                        <div className="scan-image"><img src="https://placehold.co/200x150/333333/8a2be2?text=Sample+1" alt="Sample 1" /></div>
-                        <div className="scan-details">
-                            <div className="scan-date">2025-09-15</div>
-                            <div className="scan-result">128 particles/L</div>
-                        </div>
-                    </div>
-                     <div className="scan-item">
-                        <div className="scan-image"><img src="https://placehold.co/200x150/333333/8a2be2?text=Sample+2" alt="Sample 2" /></div>
-                        <div className="scan-details">
-                            <div className="scan-date">2025-09-14</div>
-                            <div className="scan-result">256 particles/L</div>
-                        </div>
-                    </div>
-                     <div className="scan-item">
-                        <div className="scan-image"><img src="https://placehold.co/200x150/333333/8a2be2?text=Sample+3" alt="Sample 3" /></div>
-                        <div className="scan-details">
-                            <div className="scan-date">2025-09-13</div>
-                            <div className="scan-result">84 particles/L</div>
-                        </div>
-                    </div>
-                     <div className="scan-item">
-                        <div className="scan-image"><img src="https://placehold.co/200x150/333333/8a2be2?text=Sample+4" alt="Sample 4" /></div>
-                        <div className="scan-details">
-                            <div className="scan-date">2025-09-12</div>
-                            <div className="scan-result">312 particles/L</div>
-                        </div>
-                    </div>
+            <div className="research-animation">
+                <h3><i className="fas fa-flask"></i> Research in Progress</h3>
+                <div className="animation-container">
+                    <ResearchParticles />
+                    <div className="microscope"><i className="fas fa-microscope"></i></div>
                 </div>
+                <p className="research-text">Simulating particle analysis and generating detailed report...</p>
             </div>
             
             <footer>

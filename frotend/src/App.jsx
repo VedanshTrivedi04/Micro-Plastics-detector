@@ -1,7 +1,5 @@
 import React from 'react';
-// import './assets/style.css';
-import './assets/login.css';
-import './assets/register.css';
+
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/dashboard';

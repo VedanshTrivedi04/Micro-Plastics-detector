@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import'./register.css';
 
 // A dedicated component for the background particles
 const Particles = () => {
